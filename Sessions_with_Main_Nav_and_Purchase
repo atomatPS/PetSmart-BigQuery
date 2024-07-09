@@ -1,0 +1,74 @@
+SELECT 
+*
+#sum(revenue)
+FROM
+(
+SELECT
+purch_Date,
+link_text,
+purch_session_id,
+ROW_NUMBER() OVER(PARTITION BY purch_session_id) as rn,
+SUM(revenue) AS revenue
+FROM(
+with NC as (
+  SELECT
+      event_date AS Date,
+      event_name,
+      concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) AS session_id,
+      (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'link_text') AS link_text
+    FROM
+      `petsmart-web-ecom.analytics_287660050.events_*`,
+      UNNEST (event_params) AS params
+    WHERE
+      _TABLE_SUFFIX = '20240502'
+      AND event_name = 'nav_click'
+    GROUP BY
+      Date,
+      event_name,
+      session_id,
+      link_text
+),
+purch as (
+    SELECT
+      event_date AS purch_Date,
+      event_name,
+      concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) AS purch_session_id,
+      sum(ecommerce.purchase_revenue) as revenue
+    FROM
+      `petsmart-web-ecom.analytics_287660050.events_*`
+    WHERE
+      _TABLE_SUFFIX = '20240502'
+      AND event_name = 'purchase'
+    GROUP BY
+      purch_Date,
+      event_name,
+      purch_session_id
+)
+SELECT * from purch
+inner join NC on NC.Date = purch.purch_Date and NC.session_id = purch_session_id
+)
+#WHERE regexp_contains(link_text, "[Mm]y [Ss]tore")
+#WHERE regexp_contains(link_text, "Deals") or regexp_contains(link_text, "Sale")
+#WHERE regexp_contains(link_text, "[Ss]hop [Bb]y [Bb]rand")
+#WHERE regexp_contains(link_text, "[Pp]et [Ss]ervices")
+#WHERE regexp_contains(link_text, "[Pp]harmacy")
+#WHERE regexp_contains(link_text, "[Ff]eatured")
+#WHERE regexp_contains(link_text, "[Hh]elp")
+-- WHERE 
+--   regexp_contains(link_text, "[Ss]hop [Bb]y [Pp]et") or 
+--   link_text like "dog%" or 
+--   link_text like "cat%" or 
+--   link_text like "fish%" or 
+--   link_text like "bird%" or 
+--   link_text like "small pet%" or 
+--   link_text like "Farm Animal%"
+-- WHERE 
+--   link_text like "adoption%" or
+--   link_text like "Gift Card%" or
+--   regexp_contains(link_text, "Track your order") or
+--   regexp_contains(link_text, "Create Account") or
+--   regexp_contains(link_text, "Manage My Autoship Subscriptions") or
+--   regexp_contains(link_text, "Customer Care Number")
+GROUP BY purch_Date, link_text,purch_session_id
+)
+Where rn = 1
