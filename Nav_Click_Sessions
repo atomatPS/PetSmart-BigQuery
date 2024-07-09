@@ -1,0 +1,13 @@
+SELECT session_id, event_date, rn
+FROM(
+SELECT *,
+ROW_NUMBER() OVER(PARTITION BY session_id) as rn
+FROM(
+SELECT 
+concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) AS session_id,
+(SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'link_text') AS link_text,
+event_date,
+event_name
+from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX = '20240502' AND event_name = 'nav_click'
+) WHERE regexp_contains(link_text, "[Ss]hop [Bb]y [Bb]rand.*")
+) WHERE rn = 1
