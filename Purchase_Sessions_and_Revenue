@@ -1,0 +1,21 @@
+SELECT
+      event_date AS Date,
+      event_name,
+      (
+        SELECT
+          value.int_value
+        FROM
+          UNNEST (event_params)
+        WHERE
+          key = 'ga_session_id'
+      ) AS session_id,
+      sum(ecommerce.purchase_revenue) as revenue
+    FROM
+      `petsmart-web-ecom.analytics_287660050.events_*`
+    WHERE
+      _TABLE_SUFFIX = '20240502'
+      AND event_name = 'purchase'
+    GROUP BY
+      Date,
+      event_name,
+      session_id
