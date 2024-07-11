@@ -1,3 +1,6 @@
+// Link to Video where script is from: https://www.youtube.com/watch?v=Kk5ElYl4g30&t=714s
+
+
 // [START apps_script_bigquery_run_query]
 /**
  * Runs a BigQuery query and logs the results in a spreadsheet.
