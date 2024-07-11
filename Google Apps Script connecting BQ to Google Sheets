@@ -5,11 +5,10 @@
 function runQuery() {
   // Replace this value with the project ID listed in the Google
   // Cloud Platform project.
-  var projectId = 'project id';
+  var projectId = 'petsmart-web-ecom';
 
   var request = { 
-    query: 'Query ' +
-      'source table ;',
+    query: 'SELECT hour,sessions,engaged_sessions,transactions,Revenue FROM `petsmart-web-ecom.adhoc_tables.Intra-Day Test` ORDER BY hour ASC;',
     useLegacySql : false
   };
   var queryResults = BigQuery.Jobs.query(request, projectId);
@@ -41,7 +40,7 @@ function runQuery() {
   // results spreadsheet.
   if (rows) {
     var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = spreadsheet.getSheetByName('sheet name');
+    var sheet = spreadsheet.getSheetByName('Test');
 
     //headers.
     var headers = queryResults.schema.fields.map(function(field) {
