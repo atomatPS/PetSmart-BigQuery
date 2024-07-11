@@ -8,7 +8,7 @@ function runQuery() {
   var projectId = 'petsmart-web-ecom';
 
   var request = { 
-    query: 'SELECT hour,sessions,engaged_sessions,transactions,Revenue FROM `petsmart-web-ecom.adhoc_tables.Intra-Day Test` ORDER BY hour ASC;',
+    query: 'SELECT sessions,engaged_sessions,transactions,Revenue FROM `petsmart-web-ecom.adhoc_tables.Intra_Day Main Metrics` ORDER BY hour ASC;',
     useLegacySql : false
   };
   var queryResults = BigQuery.Jobs.query(request, projectId);
@@ -39,8 +39,12 @@ function runQuery() {
   
   // results spreadsheet.
   if (rows) {
-    var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = spreadsheet.getSheetByName('Test');
+
+    // Enter in URL of Spreadsheet
+    var spreadsheet = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1lZFqtedDnr74l9b4TISO-_urmXULUmdMuozq-S24zXw/edit?gid=0#gid=0');
+
+    // Specify the sheet name where it should be placed 
+    var sheet = spreadsheet.getSheetByName('Total Revenue');
 
     //headers.
     var headers = queryResults.schema.fields.map(function(field) {
@@ -56,7 +60,8 @@ function runQuery() {
         data[i][j] = cols[j].v;
       }
     }
-    sheet.getRange(2, 1, rows.length, headers.length).setValues(data);
+    // Set at which row from top and which column from left you want the data placed in 
+    sheet.getRange(77, 3, rows.length, headers.length).setValues(data);
 
     Logger.log('Results spreadsheet created: %s',    spreadsheet.getUrl());
   } else {
