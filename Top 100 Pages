@@ -1,0 +1,35 @@
+SELECT
+event_name,
+REGEXP_EXTRACT(page, r"^[^?]*") as page,
+COUNT(DISTINCT session_id) AS sessions
+FROM
+  (SELECT
+  event_name,
+    (SELECT
+          value.string_value
+        FROM
+          UNNEST (event_params)
+          WHERE key = 'page_location'
+      ) AS page,
+      CONCAT(user_pseudo_id,
+        (SELECT
+            value.int_value
+          FROM
+            UNNEST (event_params)
+          WHERE
+            key = 'ga_session_id')
+      ) AS session_id,
+    FROM `petsmart-web-ecom.analytics_287660050.events_*`
+      WHERE event_name = "page_view"
+      AND  _TABLE_SUFFIX BETWEEN FORMAT_DATE('%Y%m%d',DATE_TRUNC(DATE_SUB(CURRENT_DATE(), INTERVAL 1 WEEK),WEEK(MONDAY))) 
+        AND FORMAT_DATE('%Y%m%d',DATE_SUB(DATE_TRUNC(CURRENT_DATE(), WEEK(MONDAY)),INTERVAL 1 DAY))
+GROUP BY 
+session_id,
+event_name,
+page
+  )
+GROUP BY 
+event_name,
+page
+ORDER BY sessions DESC
+LIMIT 120
