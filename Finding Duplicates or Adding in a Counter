@@ -1,0 +1,3 @@
+
+## Counts how many times a session_id appears, and resets the count when a new one is detected
+ROW_NUMBER() OVER(PARTITION BY session_id_cd_1) as rn
