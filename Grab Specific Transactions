@@ -1,0 +1,9 @@
+SELECT 
+params.key as key,
+params.value as value
+FROM `petsmart-web-ecom.analytics_287660050.events_*`, UNNEST(event_params) as params
+where _TABLE_SUFFIX = '20240425'
+and event_name ='purchase'
+and key = 'transaction_id'
+and regexp_contains(value.string_value, '5671669') #Grabs specific transactions
+order by value.string_value desc
