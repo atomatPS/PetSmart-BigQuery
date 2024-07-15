@@ -1,0 +1,6 @@
+
+// Gets you the formatting in a "Month/Day/Year" format Ex: "7/15/2025"
+// Link to other formatting types: https://cloud.google.com/bigquery/docs/reference/standard-sql/format-elements
+
+
+FORMAT_DATE('%x', PARSE_DATE('%Y%m%d', event_date)) AS date
