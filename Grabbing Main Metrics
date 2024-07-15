@@ -1,0 +1,9 @@
+SELECT 
+FORMAT_DATE('%x', PARSE_DATE('%Y%m%d', event_date)) AS Ddate, 
+FORMAT_TIMESTAMP('%H', DATETIME(TIMESTAMP_MICROS(event_timestamp), 'America/Phoenix')) as hour,
+count(distinct concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id'))) as sessions,
+count(distinct concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'session_engaged'))) as engaged_sessions,
+SUM(CASE WHEN event_name = 'purchase' THEN 1 ELSE 0 END) AS transactions,
+round(sum(ecommerce.purchase_revenue),2) as revenue
+FROM `petsmart-web-ecom.analytics_287660050.events_*`
+where _TABLE_SUFFIX = "20240129"
