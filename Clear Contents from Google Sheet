@@ -1,0 +1,9 @@
+function ClearCells() 
+{   
+  // URL of Spreadsheet
+  var spreadsheet = SpreadsheetApp.openByUrl('https://docs.google.com/spreadsheets/d/1Srj_GtrRErAYDTaAOFUzTxkPoFv08Z8pAoYZ7SfbKzw/edit?gid=0#gid=0');
+  // Sheet name 
+  var sheet = spreadsheet.getSheetByName('Total Revenue'); 
+  // Range of cells you want cleared
+  sheet.getRange('c48:f71').clearContent();     
+}
