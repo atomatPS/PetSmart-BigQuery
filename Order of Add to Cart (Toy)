@@ -1,0 +1,159 @@
+SELECT
+count(CASE WHEN ATC_1 = "Toy" THEN 1 END) as ATC_position_1,
+count(CASE WHEN ATC_2 = "Toy" THEN 1 END) as ATC_position_2,
+count(CASE WHEN ATC_3 = "Toy" THEN 1 END) as ATC_position_3,
+count(CASE WHEN ATC_4 = "Toy" THEN 1 END) as ATC_position_4,
+count(CASE WHEN ATC_5 = "Toy" THEN 1 END) as ATC_position_5,
+count(CASE WHEN ATC_6 = "Toy" THEN 1 END) as ATC_position_6,
+count(CASE WHEN ATC_7 = "Toy" THEN 1 END) as ATC_position_7,
+count(CASE WHEN ATC_8 = "Toy" THEN 1 END) as ATC_position_8,
+count(CASE WHEN ATC_9 = "Toy" THEN 1 END) as ATC_position_9,
+count(CASE WHEN ATC_10 = "Toy" THEN 1 END) as ATC_position_10,
+count(CASE WHEN ATC_more_than_10 = "Toy" THEN 1 END) as ATC_position_more_than_10,
+count(distinct session_id_cd_1) as number_of_transactions
+FROM(
+with purch as (
+  SELECT
+  DATE,
+  item_category3,
+  event_name,
+  event_timestamp,
+  session_id_cd_1,
+  COUNT(DISTINCT session_id) AS sessions
+FROM
+  (
+    SELECT
+      event_date AS DATE,
+      event_timestamp,
+      items.item_category3 AS item_category3,
+      event_name AS event_name,
+      (
+        SELECT
+          value.int_value
+        FROM
+          UNNEST (event_params)
+        WHERE
+          KEY = 'ga_session_id'
+      ) AS session_id_cd_1,
+      CONCAT(
+        user_pseudo_id,
+        (
+          SELECT
+            value.int_value
+          FROM
+            UNNEST (event_params)
+          WHERE
+            key = 'ga_session_id'
+        )
+      ) AS session_id
+    FROM
+      `petsmart-web-ecom.analytics_287660050.events_*`,
+      UNNEST (items) AS items
+    WHERE
+      _TABLE_SUFFIX BETWEEN '20240129' AND FORMAT_DATE ("%Y%m%d", DATE_SUB(CURRENT_DATE('America/Phoenix'), INTERVAL 1 DAY))
+      AND event_name = "purchase" 
+      AND item_category3 = "Toy"
+    GROUP BY
+      DATE,
+      item_category3,
+      event_name,
+      session_id_cd_1,
+      session_id,
+      event_timestamp
+  )
+GROUP BY
+  session_id_cd_1,
+  DATE,
+  item_category3,
+  event_name,
+  event_timestamp
+),
+ATC as (
+  SELECT
+  DATE,
+  item_category3,
+  event_name,
+  event_timestamp,
+  session_id_cd_1,
+  MAX(CASE WHEN rn = 1 THEN item_category3 END) AS ATC_1,
+  MAX(CASE WHEN rn = 2 THEN item_category3 END) AS ATC_2,
+  MAX(CASE WHEN rn = 3 THEN item_category3 END) AS ATC_3,
+  MAX(CASE WHEN rn = 4 THEN item_category3 END) AS ATC_4,
+  MAX(CASE WHEN rn = 5 THEN item_category3 END) AS ATC_5,
+  MAX(CASE WHEN rn = 6 THEN item_category3 END) AS ATC_6,
+  MAX(CASE WHEN rn = 7 THEN item_category3 END) AS ATC_7,
+  MAX(CASE WHEN rn = 8 THEN item_category3 END) AS ATC_8,
+  MAX(CASE WHEN rn = 9 THEN item_category3 END) AS ATC_9,
+  MAX(CASE WHEN rn = 10 THEN item_category3 END) AS ATC_10,
+  MAX(CASE WHEN rn > 10 THEN item_category3 END) AS ATC_more_than_10
+FROM (
+ SELECT
+  DATE,
+  item_category3,
+  event_name,
+  event_timestamp,
+  session_id_cd_1,
+  ROW_NUMBER() OVER(PARTITION BY session_id_cd_1 order by event_timestamp) as rn,
+FROM
+  (
+    SELECT
+      PARSE_DATE('%Y%m%d', event_date) AS DATE,
+      TIMESTAMP_MICROS(event_timestamp) AS event_timestamp,
+      items.item_category3 AS item_category3,
+      event_name AS event_name,
+      (
+        SELECT
+          value.int_value
+        FROM
+          UNNEST (event_params)
+        WHERE
+          KEY = 'ga_session_id'
+      ) AS session_id_cd_1,
+      CONCAT(
+        user_pseudo_id,
+        (
+          SELECT
+            value.int_value
+          FROM
+            UNNEST (event_params)
+          WHERE
+            key = 'ga_session_id'
+        )
+      ) AS session_id
+    FROM
+      `petsmart-web-ecom.analytics_287660050.events_*`,
+      UNNEST (items) AS items
+    WHERE
+      _TABLE_SUFFIX BETWEEN '20240129' AND FORMAT_DATE ("%Y%m%d", DATE_SUB(CURRENT_DATE('America/Phoenix'), INTERVAL 1 DAY))
+      AND event_name = "add_to_cart" 
+    GROUP BY
+      DATE,
+      item_category3,
+      event_name,
+      session_id_cd_1,
+      session_id,
+      event_timestamp
+  )
+)
+GROUP BY 1,2,3,4,5
+ORDER BY session_id_cd_1, event_timestamp
+)
+SELECT 
+purch.* EXCEPT(session_id_cd_1),
+ATC.*
+from purch
+inner join ATC 
+on purch.session_id_cd_1 = ATC.session_id_cd_1
+WHERE ATC.ATC_1 = "Toy" 
+  OR ATC.ATC_2 = "Toy"
+  OR ATC.ATC_3 = "Toy"
+  OR ATC.ATC_4 = "Toy"
+  OR ATC.ATC_5 = "Toy"
+  OR ATC.ATC_6 = "Toy"
+  OR ATC.ATC_7 = "Toy"
+  OR ATC.ATC_8 = "Toy"
+  OR ATC.ATC_9 = "Toy"
+  OR ATC.ATC_10 = "Toy"
+  OR ATC.ATC_more_than_10 = "Toy"
+ORDER BY ATC.session_id_cd_1, ATC.event_timestamp
+)
