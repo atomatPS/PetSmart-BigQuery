@@ -1,0 +1,21 @@
+with US as (
+SELECT 
+concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as session_id,
+(SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'promo_variant') AS promo_variant,
+(SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'link_text') AS link_text,
+(SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'promo_title') AS promo_title,
+(SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'page_location') AS page_location,
+event_date,
+event_name
+from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX BETWEEN '20240401' AND FORMAT_DATE ("%Y%m%d", DATE_SUB(CURRENT_DATE('America/Phoenix'), INTERVAL 1 DAY)) and event_name = 'contentful_click'),
+CA as (
+SELECT 
+concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as session_id,
+(SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'promo_variant') AS promo_variant,
+(SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'link_text') AS link_text,
+(SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'promo_title') AS promo_title,
+(SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'page_location') AS page_location,
+event_date,
+event_name
+from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX BETWEEN '20240401' AND FORMAT_DATE ("%Y%m%d", DATE_SUB(CURRENT_DATE('America/Phoenix'), INTERVAL 1 DAY)) and event_name = 'contentful_click')
+SELECT * FROM US UNION ALL SELECT * FROM CA
