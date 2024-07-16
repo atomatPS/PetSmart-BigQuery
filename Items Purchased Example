@@ -1,0 +1,12 @@
+// Difficult to combine with other metrics, will probably have to run seperatley 
+
+
+SELECT 
+  event_date,
+  FORMAT_TIMESTAMP('%H', DATETIME(TIMESTAMP_MICROS(event_timestamp), 'America/Phoenix')) as hour,
+  SUM(CASE WHEN event_name = 'purchase' THEN items.quantity END) AS items_purchased
+    FROM
+      `petsmart-web-ecom.analytics_287660050.events_*`, UNNEST (items) AS items
+      where _TABLE_SUFFIX = FORMAT_DATE ("%Y%m%d", DATE_SUB(CURRENT_DATE('America/Phoenix'), INTERVAL 2 DAY))
+      GROUP BY event_date, hour
+      ORDER BY event_date
