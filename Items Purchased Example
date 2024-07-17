@@ -10,3 +10,53 @@ SELECT
       where _TABLE_SUFFIX = FORMAT_DATE ("%Y%m%d", DATE_SUB(CURRENT_DATE('America/Phoenix'), INTERVAL 2 DAY))
       GROUP BY event_date, hour
       ORDER BY event_date
+
+
+
+
+
+// Code for Intra-Day Items Purchased 
+
+SELECT 
+US_date as date,
+US_hour as hour,
+US_sessions + CA_sessions as sessions,
+US_engaged_sessions + CA_engaged_sessions as engaged_sessions,
+US_transactions + CA_transactions as transactions,
+ROUND(US_Revenue + CA_Revenue,2) as Revenue
+FROM(
+with US as 
+  (SELECT 
+    CURRENT_DATE('America/Phoenix') as US_today,
+    PARSE_DATE('%Y%m%d', event_date) as US_date,
+    extract(hour FROM event_timestamp_NEW AT TIME ZONE 'America/Phoenix') as US_hour,
+    count(distinct concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id'))) as US_sessions,
+    count(distinct concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'session_engaged'))) as US_engaged_sessions,
+    SUM(CASE WHEN event_name = 'purchase' THEN 1 ELSE 0 END) AS US_transactions, 
+    round(sum(ecommerce.purchase_revenue),2) as US_Revenue
+    FROM(
+      SELECT TIMESTAMP_MICROS(event_timestamp) AS event_timestamp_NEW,
+      *
+      from `petsmart-web-ecom.analytics_287660050.events_intraday_*`
+      ) GROUP BY US_date, US_hour
+  ),
+CA as 
+  (SELECT 
+    CURRENT_DATE('America/Phoenix') as CA_today,
+    PARSE_DATE('%Y%m%d', event_date) as CA_date,
+    extract(hour FROM event_timestamp_NEW AT TIME ZONE 'America/Phoenix') as CA_hour,
+    count(distinct concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id'))) as CA_sessions,
+    count(distinct concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'session_engaged'))) as CA_engaged_sessions,
+    SUM(CASE WHEN event_name = 'purchase' THEN 1 ELSE 0 END) AS CA_transactions, 
+    round(sum(ecommerce.purchase_revenue),2) as CA_Revenue
+    FROM(
+      SELECT TIMESTAMP_MICROS(event_timestamp) AS event_timestamp_NEW,
+      *
+      from `petsmart-web-ecom.analytics_339409281.events_intraday_*` 
+      ) GROUP BY CA_date, CA_hour
+  )
+SELECT * FROM US 
+inner join CA on US_hour = CA_hour and US_date = CA_date
+ORDER BY US_hour ASC
+)
+WHERE US_today = US_date
