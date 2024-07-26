@@ -1,0 +1,13 @@
+\\\\\ https://mode.com/sql-tutorial/sql-union
+
+
+with US as (
+## Whatever the script for US is 
+),
+with CA as(
+## Whatever the script for CA is 
+)
+SELECT * FROM US
+UNION ALL
+SELECT * FROM CA
+
