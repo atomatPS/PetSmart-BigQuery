@@ -1,0 +1,18 @@
+## Example using Optimizley 
+
+DECLARE optimizley_campaign STRING;
+DECLARE Control_ID STRING;
+DECLARE Variant_ID STRING;
+DECLARE Start_Date STRING;
+DECLARE End_Date STRING;
+
+
+#######################################################
+########### Below is what needs to be edited ########### 
+#######################################################
+
+SET optimizley_campaign = 'DVM-328/DPT-5113 V3 PDP Tile Add to Cart';
+SET Control_ID = '26178010214';
+SET Variant_ID = '26244320098';
+SET Start_Date = '20231115';
+SET End_Date = '20231228';
