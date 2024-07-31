@@ -71,7 +71,7 @@ with opti_sessions as (
     concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment,
-  from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and Start_Date AND  event_name = 'optimizely_decision_web'
+  from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
   )
   WHERE regexp_contains(optimizely_experiment ,optimizley_campaign)
   AND regexp_contains(optimizely_variation ,Variant_ID)
@@ -86,7 +86,7 @@ purch_sessions as(
   (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
   concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as purch_session_id,
   ecommerce.purchase_revenue as revenue
-  from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and Start_Date AND  event_name = 'purchase'
+  from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
 )
 SELECT * from opti_sessions 
 left join purch_sessions on opti_session_id = purch_session_id
@@ -118,7 +118,7 @@ with opti_sessions as (
     concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment,
-  from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and Start_Date AND  event_name = 'optimizely_decision_web'
+  from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
   )
   WHERE regexp_contains(optimizely_experiment ,optimizley_campaign)
   AND regexp_contains(optimizely_variation ,Variant_ID)
@@ -133,7 +133,7 @@ purch_sessions as(
   (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
   concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as purch_session_id,
   ecommerce.purchase_revenue as revenue
-  from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and Start_Date AND  event_name = 'purchase'
+  from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
 )
 SELECT * from opti_sessions 
 left join purch_sessions on opti_session_id = purch_session_id
@@ -185,7 +185,7 @@ with opti_sessions as (
     concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment,
-  from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and Start_Date AND  event_name = 'optimizely_decision_web'
+  from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
   )
   WHERE regexp_contains(optimizely_experiment ,optimizley_campaign)
   AND regexp_contains(optimizely_variation ,Control_ID)
@@ -200,7 +200,7 @@ purch_sessions as(
   (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
   concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as purch_session_id,
   ecommerce.purchase_revenue as revenue
-  from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and Start_Date AND  event_name = 'purchase'
+  from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
 )
 SELECT * from opti_sessions 
 left join purch_sessions on opti_session_id = purch_session_id
@@ -232,7 +232,7 @@ with opti_sessions as (
     concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment,
-  from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and Start_Date AND  event_name = 'optimizely_decision_web'
+  from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
   )
   WHERE regexp_contains(optimizely_experiment ,optimizley_campaign)
   AND regexp_contains(optimizely_variation ,Control_ID)
@@ -247,7 +247,7 @@ purch_sessions as(
   (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
   concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as purch_session_id,
   ecommerce.purchase_revenue as revenue
-  from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and Start_Date AND  event_name = 'purchase'
+  from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
 )
 SELECT * from opti_sessions 
 left join purch_sessions on opti_session_id = purch_session_id
