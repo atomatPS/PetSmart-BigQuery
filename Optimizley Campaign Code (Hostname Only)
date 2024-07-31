@@ -1,0 +1,246 @@
+############### Broken out by Hostname Only
+##################################################################
+
+
+DECLARE optimizley_campaign STRING;
+DECLARE Control_ID STRING;
+DECLARE Variant_ID STRING;
+DECLARE Start_Date STRING;
+DECLARE End_Date STRING;
+
+DECLARE Control_n int64;
+DECLARE Control_mean int64;
+DECLARE Control_sd int64;
+DECLARE Variant_n int64;
+DECLARE Variant_mean int64;
+DECLARE Variant_sd int64;
+
+
+
+
+#######################################################
+########### This is what needs to be edited ########### 
+#######################################################
+
+SET optimizley_campaign = 'PDP Tile Add to Cart'; # Sometimes 
+SET Control_ID = '25139280043';
+SET Variant_ID = '25044560675';
+SET Start_Date = '20231018';
+SET End_Date = '20231102';
+
+############################################################################################
+############################################################################################
+
+
+
+###############################
+########### Variant ###########
+###############################
+SELECT 
+US_opti_hostname,
+COUNT(*) as Variant_n,
+avg(US_revenue) as Variant_Revenue_mean,
+stddev(US_revenue) as Variant_Revenue_sd,
+avg(Conversion) as Variant_CVR_mean,
+stddev(Conversion) as Variant_CVR_sd
+from(
+with US as (
+SELECT 
+opti_date as US_opti_date,
+opti_event as US_opti_event,
+opti_hostname as US_opti_hostname,
+opti_session_id as US_opti_session_id,
+optimizely_variation as US_optimizely_variation,
+optimizely_experiment as US_optimizely_experiment,
+IFNULL(revenue,0) AS US_revenue,
+CASE WHEN revenue > 0 then 1 ELSE 0 END as Conversion
+from(
+with opti_sessions as (
+  SELECT * 
+  from(
+    SELECT *,
+    ROW_NUMBER() OVER(PARTITION BY opti_session_id) as rn
+  from(
+    SELECT 
+    event_date as opti_date,
+    event_name as opti_event,
+    (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS opti_hostname,
+    concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment,
+  from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
+  )
+  WHERE regexp_contains(optimizely_experiment ,optimizley_campaign)
+  AND regexp_contains(optimizely_variation ,Variant_ID)
+  )
+  WHERE rn = 1
+),
+purch_sessions as(
+  SELECT 
+  event_date as purch_date,
+  event_name as purch_event,
+  (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
+  concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as purch_session_id,
+  ecommerce.purchase_revenue as revenue
+  from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
+)
+SELECT * from opti_sessions 
+left join purch_sessions on opti_session_id = purch_session_id
+)
+),
+CA as (
+SELECT 
+opti_date as CA_opti_date,
+opti_event as CA_opti_event,
+opti_hostname as CA_opti_hostname,
+opti_session_id as CA_opti_session_id,
+optimizely_variation as CA_optimizely_variation,
+optimizely_experiment as CA_optimizely_experiment,
+IFNULL(revenue,0) AS US_revenue,
+CASE WHEN revenue > 0 then 1 ELSE 0 END as Conversion
+from(
+with opti_sessions as (
+  SELECT * 
+  from(
+    SELECT *,
+    ROW_NUMBER() OVER(PARTITION BY opti_session_id) as rn
+  from(
+    SELECT 
+    event_date as opti_date,
+    event_name as opti_event,
+    (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS opti_hostname,
+    concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment,
+  from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
+  )
+  WHERE regexp_contains(optimizely_experiment ,optimizley_campaign)
+  AND regexp_contains(optimizely_variation ,Variant_ID)
+  )
+  WHERE rn = 1
+),
+purch_sessions as(
+  SELECT 
+  event_date as purch_date,
+  event_name as purch_event,
+  (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
+  concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as purch_session_id,
+  ecommerce.purchase_revenue as revenue
+  from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
+)
+SELECT * from opti_sessions 
+left join purch_sessions on opti_session_id = purch_session_id
+)  
+)
+SELECT * from US
+UNION ALL
+SELECT * from CA
+)
+group by US_opti_hostname;
+
+
+
+###############################
+########### Control ###########
+###############################
+SELECT 
+US_opti_hostname,
+COUNT(*),
+avg(US_revenue) as Control_Revenue_mean,
+stddev(US_revenue) as Control_Revenue_sd,
+avg(Conversion) as Control_CVR_mean,
+stddev(Conversion) as Control_CVR_sd
+from(
+with US as (
+SELECT 
+opti_date as US_opti_date,
+opti_event as US_opti_event,
+opti_hostname as US_opti_hostname,
+opti_session_id as US_opti_session_id,
+optimizely_variation as US_optimizely_variation,
+optimizely_experiment as US_optimizely_experiment,
+IFNULL(revenue,0) AS US_revenue,
+CASE WHEN revenue > 0 then 1 ELSE 0 END as Conversion
+from(
+with opti_sessions as (
+  SELECT * 
+  from(
+    SELECT *,
+    ROW_NUMBER() OVER(PARTITION BY opti_session_id) as rn
+  from(
+    SELECT 
+    event_date as opti_date,
+    event_name as opti_event,
+    (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS opti_hostname,
+    concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment,
+  from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
+  )
+  WHERE regexp_contains(optimizely_experiment ,optimizley_campaign)
+  AND regexp_contains(optimizely_variation ,Control_ID)
+  )
+  WHERE rn = 1
+),
+purch_sessions as(
+  SELECT 
+  event_date as purch_date,
+  event_name as purch_event,
+  (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
+  concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as purch_session_id,
+  ecommerce.purchase_revenue as revenue
+  from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
+)
+SELECT * from opti_sessions 
+left join purch_sessions on opti_session_id = purch_session_id
+)
+),
+CA as (
+SELECT 
+opti_date as CA_opti_date,
+opti_event as CA_opti_event,
+opti_hostname as CA_opti_hostname,
+opti_session_id as CA_opti_session_id,
+optimizely_variation as CA_optimizely_variation,
+optimizely_experiment as CA_optimizely_experiment,
+IFNULL(revenue,0) AS US_revenue,
+CASE WHEN revenue > 0 then 1 ELSE 0 END as Conversion
+from(
+with opti_sessions as (
+  SELECT * 
+  from(
+    SELECT *,
+    ROW_NUMBER() OVER(PARTITION BY opti_session_id) as rn
+  from(
+    SELECT 
+    event_date as opti_date,
+    event_name as opti_event,
+    (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS opti_hostname,
+    concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment,
+  from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
+  )
+  WHERE regexp_contains(optimizely_experiment ,optimizley_campaign)
+  AND regexp_contains(optimizely_variation ,Control_ID)
+  )
+  WHERE rn = 1
+),
+purch_sessions as(
+  SELECT 
+  event_date as purch_date,
+  event_name as purch_event,
+  (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
+  concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as purch_session_id,
+  ecommerce.purchase_revenue as revenue
+  from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
+)
+SELECT * from opti_sessions 
+left join purch_sessions on opti_session_id = purch_session_id
+)  
+)
+SELECT * from US
+UNION ALL
+SELECT * from CA
+)
+group by US_opti_hostname;
