@@ -97,7 +97,7 @@ SELECT
 opti_date as CA_opti_date,
 opti_event as CA_opti_event,
 opti_device_category as CA_opti_device_category,
-opti_hostname as CA_opti_device_category,
+opti_hostname as CA_opti_hostname,
 opti_session_id as CA_opti_session_id,
 optimizely_variation as CA_optimizely_variation,
 optimizely_experiment as CA_optimizely_experiment,
