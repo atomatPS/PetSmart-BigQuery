@@ -1,0 +1,8 @@
+Example using Fulfillment method
+
+
+SELECT
+CASE when event_name = 'add_to_cart' then(select value.string_value from unnest(item_params) where key = 'fulfillment_method') else "none" end as fulfilment_method_ATC,
+CASE when event_name = 'remove_from_cart' then(select value.string_value from unnest(item_params) where key = 'fulfillment_method') else "none" end as fulfilment_method_RFC
+ from `petsmart-web-ecom.analytics_287660050.events_*`,  UNNEST (items) as items WHERE _TABLE_SUFFIX between '20240423' and '20240424'
+Group by fulfilment_method_ATC, fulfilment_method_RFC
