@@ -4,7 +4,7 @@
 with US as (
 ## Whatever the script for US is 
 ),
-with CA as(
+CA as(
 ## Whatever the script for CA is 
 )
 SELECT * FROM US
