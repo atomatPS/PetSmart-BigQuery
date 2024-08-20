@@ -2,7 +2,8 @@
 ##################################################################
 
 
-DECLARE optimizley_campaign STRING;
+DECLARE opti_campaign STRING;
+DECLARE opti_experiment STRING;
 DECLARE Control_ID_US STRING;
 DECLARE Variant_ID_US STRING;
 DECLARE Control_ID_CA STRING;
@@ -24,13 +25,14 @@ DECLARE Variant_sd int64;
 ########### This is what needs to be edited ########### 
 #######################################################
 
-SET optimizley_campaign = 'Legacy Cookie';
-SET Control_ID_US = '%30072550183%';
-SET Variant_ID_US = '%30072550183%';
-SET Control_ID_CA = '%30129130165%';
-SET Variant_ID_CA = '%30129130165%';
-SET Start_Date = '20240802';
-SET End_Date = '20240802';
+SET opti_campaign = '50% M4 Traffic Monitoring';
+SET opti_experiment = 'Legacy'; ## Will have to change this to legacy or replatform depending
+SET Control_ID_US = '30122530594'; ## If there is no US or CA Control version just put the same ID for both
+SET Variant_ID_US = '30189170384'; ## If there is no US or CA Variant version just put the same ID for both
+SET Control_ID_CA = '30122530594';
+SET Variant_ID_CA = '30189170384';
+SET Start_Date = '20240815';
+SET End_Date = '20240818';
 
 ############################################################################################
 ############################################################################################
@@ -39,12 +41,16 @@ SET End_Date = '20240802';
 ###############################
 ########### Variant ###########
 ###############################
+
 SELECT 
 COUNT(*) as Variant_n,
 avg(US_revenue) as Variant_Revenue_mean,
 stddev(US_revenue) as Variant_Revenue_sd,
 avg(Conversion) as Variant_CVR_mean,
 stddev(Conversion) as Variant_CVR_sd
+from(
+SELECT 
+*, ROW_NUMBER() OVER(PARTITION BY US_opti_session_id) as rn
 from(
 with US as (
 SELECT 
@@ -67,12 +73,13 @@ with opti_sessions as (
     event_name as opti_event,
     concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
-    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_campaign') AS optimizely_campaign,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment
   from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
   )
-  WHERE regexp_contains(optimizely_experiment ,optimizley_campaign)
-  AND optimizely_variation LIKE Variant_ID_US or optimizely_variation LIKE  Variant_ID_CA 
-
+  WHERE regexp_contains(optimizely_campaign, opti_campaign) 
+    AND regexp_contains(optimizely_experiment, opti_experiment)
+    AND regexp_contains(optimizely_variation, Variant_ID_US) 
   )
   WHERE rn = 1
 ),
@@ -109,11 +116,13 @@ with opti_sessions as (
     event_name as opti_event,
     concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
-    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_campaign') AS optimizely_campaign,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment
   from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
   )
-  WHERE regexp_contains(optimizely_experiment ,optimizley_campaign)
-  AND optimizely_variation LIKE Variant_ID_US or optimizely_variation LIKE  Variant_ID_CA 
+  WHERE regexp_contains(optimizely_campaign, opti_campaign) 
+    AND regexp_contains(optimizely_experiment, opti_experiment)
+    AND regexp_contains(optimizely_variation, Variant_ID_CA) 
   )
   WHERE rn = 1
 ),
@@ -132,7 +141,8 @@ left join purch_sessions on opti_session_id = purch_session_id
 SELECT * from US
 UNION ALL
 SELECT * from CA
-);
+)
+) where rn = 1;
 
 ############################################################################################
 ############################################################################################
@@ -141,11 +151,14 @@ SELECT * from CA
 ########### Control ###########
 ###############################
 SELECT 
-COUNT(*),
+COUNT(*) as Control_n,
 avg(US_revenue) as Control_Revenue_mean,
 stddev(US_revenue) as Control_Revenue_sd,
 avg(Conversion) as Control_CVR_mean,
 stddev(Conversion) as Control_CVR_sd
+from(
+  SELECT 
+*, ROW_NUMBER() OVER(PARTITION BY US_opti_session_id) as rn
 from(
 with US as (
 SELECT 
@@ -168,12 +181,13 @@ with opti_sessions as (
     event_name as opti_event,
     concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
-    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_campaign') AS optimizely_campaign,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment
   from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
   )
-  WHERE regexp_contains(optimizely_experiment ,optimizley_campaign)
-  AND optimizely_variation LIKE Variant_ID_US or optimizely_variation LIKE  Variant_ID_CA 
-
+  WHERE regexp_contains(optimizely_campaign, opti_campaign) 
+    AND regexp_contains(optimizely_experiment, opti_experiment)
+    AND regexp_contains(optimizely_variation, Control_ID_US)
   )
   WHERE rn = 1
 ),
@@ -210,12 +224,13 @@ with opti_sessions as (
     event_name as opti_event,
     concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
-    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_campaign') AS optimizely_campaign,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment
   from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
   )
-  WHERE regexp_contains(optimizely_experiment ,optimizley_campaign)
-  AND optimizely_variation LIKE Variant_ID_US or optimizely_variation LIKE  Variant_ID_CA 
-
+ WHERE regexp_contains(optimizely_campaign, opti_campaign) 
+  AND regexp_contains(optimizely_experiment, opti_experiment)
+  AND regexp_contains(optimizely_variation, Control_ID_CA) 
   )
   WHERE rn = 1
 ),
@@ -234,4 +249,5 @@ left join purch_sessions on opti_session_id = purch_session_id
 SELECT * from US
 UNION ALL
 SELECT * from CA
-);
+)
+)where rn = 1;
