@@ -5,7 +5,7 @@ https://www.youtube.com/watch?v=wG9_eZGQoHc&t=45s
 https://stackoverflow.com/questions/25981703/pip-install-fails-with-connection-error-ssl-certificate-verify-failed-certi
 
 
-## Need this in Jupyter Notebook to install selenium
+## Need this in Jupyter Notebook to install selenium (and also any other packages you might want to install)
 ! pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org selenium
 
 
