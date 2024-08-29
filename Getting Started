@@ -1,0 +1,33 @@
+# Helpful links
+https://www.scrapingbee.com/blog/selenium-python/
+https://gist.github.com/TechShreyash/9c5f5cf0c9e754c11f7dcf7c83870864
+https://www.youtube.com/watch?v=wG9_eZGQoHc&t=45s
+
+
+## Need this in Jupyter Notebook to install selenium
+! pip install --trusted-host pypi.org --trusted-host pypi.python.org --trusted-host files.pythonhosted.org selenium
+
+
+# Steps:
+## 1. Open terminal/Command Prompt 
+## 2. Enter in "python"
+
+# Additional steps 
+## check if python is installed 
+## Use Ctrl + Z to get out of python shell (if already typed in python) Ctrl + D on mac
+python - V # Tells you the version of python you have if installed
+python -m pip --version # Tells you if pip (which you will need is installed
+pip # Tells you also if pip is installed (if you get an error that means its not there)
+
+## If not done already
+pip install selenium
+
+
+## Needed everytime we want to do web scraping 
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+
+driver.get('https://google.com') # Or any link you choose
+
+driver.quit # Does not work....
