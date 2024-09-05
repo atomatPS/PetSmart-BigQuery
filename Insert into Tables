@@ -1,0 +1,69 @@
+### Template 
+
+INSERT INTO `"Name of table"` (the schema of the table in exactly the same order as it appears)(
+SELECT *
+from(
+
+"the query that gives you the data you would like to insert"
+
+) WHERE unique_event_identifier NOT IN (SELECT " A unique_event_identifier you create" from `"Name of table again"`)
+)
+
+
+
+
+#### Example 
+
+INSERT INTO `petsmart-web-ecom.Intra_Day.Contentful Clicks NEW` (Country, date, hour, event_name, promo_variant, link_text, promo_title, page_location, unique_event_identifier)(
+SELECT *
+from(
+
+with US as 
+  (SELECT 
+    "US" as Country,
+    PARSE_DATE('%Y%m%d', event_date) as date,
+    extract(hour FROM event_timestamp_NEW AT TIME ZONE 'America/Phoenix') hour,
+    event_name,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'promo_variant') AS promo_variant,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'link_text') AS link_text,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'promo_title') AS promo_title,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'page_location') AS page_location,
+    concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id'),event_timestamp) as unique_event_identifier
+    FROM(
+      SELECT TIMESTAMP_MICROS(event_timestamp) AS event_timestamp_NEW,
+      *
+      from `petsmart-web-ecom.analytics_287660050.events_*`
+      WHERE _TABLE_SUFFIX = '20240827'
+      AND event_name = 'contentful_click'
+
+      )
+  ),
+CA as 
+  (SELECT 
+    "CA" as Country,
+    PARSE_DATE('%Y%m%d', event_date) as date,
+    extract(hour FROM event_timestamp_NEW AT TIME ZONE 'America/Phoenix') as hour,
+    event_name,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'promo_variant') AS promo_variant,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'link_text') AS link_text,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'promo_title') AS promo_title,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'page_location') AS page_location,
+    concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id'),event_timestamp) as unique_event_identifier
+    FROM(
+      SELECT TIMESTAMP_MICROS(event_timestamp) AS event_timestamp_NEW,
+      *
+      from `petsmart-web-ecom.analytics_339409281.events_*`
+      WHERE _TABLE_SUFFIX = '20240827'
+      AND event_name = 'contentful_click'
+      )
+  )
+SELECT * FROM US
+UNION ALL
+SELECT * FROM CA
+ORDER BY hour ASC
+
+
+) WHERE unique_event_identifier NOT IN (SELECT unique_event_identifier from `petsmart-web-ecom.Intra_Day.Contentful Clicks NEW`)
+)
+
+
