@@ -1,3 +1,8 @@
+
+############### Be sure to change the date range 
+#############
+
+
 INSERT INTO `petsmart-web-ecom.Intra_Day.Filter Selection` (Country, date, hour, event_name, filter_type, filter_selection, page_location, unique_event_identifier)(
 SELECT *
 from(
