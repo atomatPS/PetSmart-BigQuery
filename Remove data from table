@@ -1,0 +1,8 @@
+# Template 
+DELETE FROM "table_name" WHERE "condition"
+
+
+# Example
+## Removes all rows that have an hour of 0 from the data table "Intra-Day Test"
+DELETE FROM `petsmart-web-ecom.adhoc_tables.Intra-Day Test` WHERE hour = 0
+
