@@ -1,0 +1,46 @@
+INSERT INTO `petsmart-web-ecom.Intra_Day.Filter Selection` (Country, date, hour, event_name, filter_type, filter_selection, page_location, unique_event_identifier)(
+SELECT *
+from(
+with US as 
+  (SELECT 
+    "US" as Country,
+    PARSE_DATE('%Y%m%d', event_date) as date,
+    extract(hour FROM event_timestamp_NEW AT TIME ZONE 'America/Phoenix') hour,
+    event_name,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'filter_type') AS filter_type,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'filter_selection') AS filter_selection,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'page_location') AS page_location,
+    concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id'),event_timestamp) as unique_event_identifier
+    FROM(
+      SELECT TIMESTAMP_MICROS(event_timestamp) AS event_timestamp_NEW,
+      *
+      from `petsmart-web-ecom.analytics_287660050.events_*`
+      WHERE _TABLE_SUFFIX = '20240827' 
+      AND event_name = 'product_list_filter'
+
+      )
+  ),
+CA as 
+  (SELECT 
+    "CA" as Country,
+    PARSE_DATE('%Y%m%d', event_date) as date,
+    extract(hour FROM event_timestamp_NEW AT TIME ZONE 'America/Phoenix') as hour,
+    event_name,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'filter_type') AS filter_type,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'filter_selection') AS filter_selection,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'page_location') AS page_location,
+    concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id'),event_timestamp) as unique_event_identifier,
+    FROM(
+      SELECT TIMESTAMP_MICROS(event_timestamp) AS event_timestamp_NEW,
+      *
+      from `petsmart-web-ecom.analytics_339409281.events_*`
+      WHERE _TABLE_SUFFIX = '20240827' 
+      AND event_name = 'product_list_filter'
+      )
+  )
+SELECT * FROM US
+UNION ALL
+SELECT * FROM CA
+ORDER BY hour ASC
+) WHERE unique_event_identifier NOT IN (SELECT unique_event_identifier from `petsmart-web-ecom.Intra_Day.Filter Selection`)
+)
