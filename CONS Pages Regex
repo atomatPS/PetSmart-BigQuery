@@ -1,0 +1,12 @@
+L1 CONS Pages
+^\/\b([Dd]og|[Cc]at)\/|^\/\b([Dd]og|[Cc]at)
+
+L2 CONS Pages
+^\/\b([Dd]og|[Cc]at)\/\b(food-and-treats|food|treats|litter-and-waste-disposal)\/|^\/\b([Dd]og|[Cc]at)\/\b(food-and-treats|food|treats|litter-and-waste-disposal)
+
+L3 Cons Pages		
+^\/\b([Dd]og|cat)\/\b(food-and-treats|food|treats|litter-and-waste-disposal)\/[a-zA-Z0-9_-]+\/$|^\/\b([Dd]og|cat)\/\b(food-and-treats|food|treats|litter-and-waste-disposal)\/[a-zA-Z0-9_-]+$
+		
+All CONS Pages 
+^\/\b([Dd]og|cat)\/\b(food-and-treats|food|treats|litter-and-waste-disposal)\/.*|^\/\b([Dd]og|cat)\/\b(food-and-treats|food|treats|litter-and-waste-disposal).*
+ 
