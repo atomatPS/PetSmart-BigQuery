@@ -4,3 +4,8 @@
 
 
 FORMAT_DATE('%x', PARSE_DATE('%Y%m%d', event_date)) AS date
+
+
+// Formats timestamp into date and exact time event occurred
+TIMESTAMP_MICROS(event_timestamp) as event_timestamp
+
