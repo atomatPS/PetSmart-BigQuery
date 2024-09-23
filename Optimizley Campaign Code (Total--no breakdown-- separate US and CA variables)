@@ -54,8 +54,6 @@ SELECT
 from(
 with US as (
 SELECT 
-opti_date as US_opti_date,
-opti_event as US_opti_event,
 opti_user_id as US_opti_user_id,
 optimizely_variation as US_optimizely_variation,
 optimizely_experiment as US_optimizely_experiment,
@@ -69,8 +67,6 @@ with opti_users as (
     ROW_NUMBER() OVER(PARTITION BY opti_user_id) as rn
   from(
     SELECT 
-    event_date as opti_date,
-    event_name as opti_event,
     user_pseudo_id as opti_user_id,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_campaign') AS optimizely_campaign,
@@ -85,12 +81,10 @@ with opti_users as (
 ),
 purch_users as(
   SELECT 
-  event_date as purch_date,
-  event_name as purch_event,
   user_pseudo_id as purch_user_id,
   sum(ecommerce.purchase_revenue) as revenue
   from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
-  group by 1,2,3
+  group by 1
 )
 SELECT * from opti_users
 left join purch_users on opti_user_id = purch_user_id
@@ -98,8 +92,6 @@ left join purch_users on opti_user_id = purch_user_id
 ),
 CA as (
 SELECT 
-opti_date as CA_opti_date,
-opti_event as CA_opti_event,
 opti_session_id as CA_opti_user_id,
 optimizely_variation as CA_optimizely_variation,
 optimizely_experiment as CA_optimizely_experiment,
@@ -113,8 +105,6 @@ with opti_users as (
     ROW_NUMBER() OVER(PARTITION BY opti_user_id) as rn
   from(
     SELECT 
-    event_date as opti_date,
-    event_name as opti_event,
     user_pseudo_id as opti_user_id,
     concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as opti_session_id,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
@@ -130,12 +120,10 @@ with opti_users as (
 ),
 purch_users as(
   SELECT 
-  event_date as purch_date,
-  event_name as purch_event,
   user_pseudo_id as purch_user_id,
   sum(ecommerce.purchase_revenue) as revenue
   from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
-  group by 1,2,3
+  group by 1
 ) 
 SELECT * from opti_users 
 left join purch_users on opti_user_id = purch_user_id
@@ -165,8 +153,6 @@ from(
 from(
 with US as (
 SELECT 
-opti_date as US_opti_date,
-opti_event as US_opti_event,
 opti_user_id as US_opti_user_id,
 optimizely_variation as US_optimizely_variation,
 optimizely_experiment as US_optimizely_experiment,
@@ -180,8 +166,6 @@ with opti_users as (
     ROW_NUMBER() OVER(PARTITION BY opti_user_id) as rn
   from(
     SELECT 
-    event_date as opti_date,
-    event_name as opti_event,
     user_pseudo_id as opti_user_id,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_campaign') AS optimizely_campaign,
@@ -196,11 +180,10 @@ with opti_users as (
 ),
 purch_users as(
   SELECT 
-  event_date as purch_date,
-  event_name as purch_event,
   user_pseudo_id as purch_user_id,
-  ecommerce.purchase_revenue as revenue
+  sum(ecommerce.purchase_revenue) as revenue
   from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
+  group by 1
 )
 SELECT * from opti_users 
 left join purch_users on opti_user_id = purch_user_id
@@ -208,8 +191,6 @@ left join purch_users on opti_user_id = purch_user_id
 ),
 CA as (
 SELECT 
-opti_date as CA_opti_date,
-opti_event as CA_opti_event,
 opti_user_id as CA_opti_user_id,
 optimizely_variation as CA_optimizely_variation,
 optimizely_experiment as CA_optimizely_experiment,
@@ -223,8 +204,6 @@ with opti_users as (
     ROW_NUMBER() OVER(PARTITION BY opti_user_id) as rn
   from(
     SELECT 
-    event_date as opti_date,
-    event_name as opti_event,
     user_pseudo_id as opti_user_id,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_campaign') AS optimizely_campaign,
@@ -239,11 +218,10 @@ with opti_users as (
 ),
 purch_users as(
   SELECT 
-  event_date as purch_date,
-  event_name as purch_event,
   user_pseudo_id as purch_user_id,
-  ecommerce.purchase_revenue as revenue
+  sum(ecommerce.purchase_revenue) as revenue
   from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
+  group by 1
 )
 SELECT * from opti_users 
 left join purch_users on opti_user_id = purch_user_id
