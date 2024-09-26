@@ -83,8 +83,9 @@ purch_users as(
   SELECT 
   (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
   user_pseudo_id as purch_user_id,
-  ecommerce.purchase_revenue as revenue
+  sum(ecommerce.purchase_revenue) as revenue
   from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
+  GROUP BY 1,2
 )
 SELECT * from opti_users
 left join purch_users on opti_user_id = purch_user_id
@@ -123,8 +124,9 @@ purch_users as(
   SELECT 
   (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
   user_pseudo_id as purch_user_id,
-  ecommerce.purchase_revenue as revenue
+  sum(ecommerce.purchase_revenue) as revenue
   from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
+  GROUP BY 1,2
 )
 SELECT * from opti_users 
 left join purch_users on opti_user_id = purch_user_id
@@ -182,8 +184,9 @@ purch_users as(
   SELECT 
   (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
   user_pseudo_id as purch_user_id,
-  ecommerce.purchase_revenue as revenue
+  sum(ecommerce.purchase_revenue) as revenue
   from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
+  GROUP BY 1,2
 )
 SELECT * from opti_users 
 left join purch_users on opti_user_id = purch_user_id
@@ -222,8 +225,9 @@ purch_users as(
   SELECT 
   (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
   user_pseudo_id as purch_user_id,
-  ecommerce.purchase_revenue as revenue
+  sum(ecommerce.purchase_revenue) as revenue
   from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
+  GROUP BY 1,2
 )
 SELECT * from opti_users 
 left join purch_users on opti_user_id = purch_user_id
