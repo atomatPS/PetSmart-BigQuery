@@ -163,7 +163,7 @@ group by US_opti_device_category,US_opti_hostname;
 SELECT 
 US_opti_device_category,
 US_opti_hostname,
-COUNT(*) as Variant_n,
+COUNT(*) as Control_n,
 avg(US_revenue) as Control_Revenue_mean,
 stddev(US_revenue) as Control_Revenue_sd,
 avg(Conversion) as Control_CVR_mean,
