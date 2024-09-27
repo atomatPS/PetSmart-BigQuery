@@ -131,7 +131,7 @@ purch_users as(
   device.category as purch_device_category,
   (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
   user_pseudo_id as purch_user_id,
-  sum(ecommerce.purchase_revenue) as revenue
+  sum(ecommerce.purchase_revenue_in_usd) as revenue
   from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
   GROUP BY 1,2,3
 )
@@ -239,7 +239,7 @@ purch_users as(
   device.category as purch_device_category,
   (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
   user_pseudo_id as purch_user_id,
-  sum(ecommerce.purchase_revenue) as revenue
+  sum(ecommerce.purchase_revenue_in_usd) as revenue
   from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
   GROUP BY 1,2,3
 )
