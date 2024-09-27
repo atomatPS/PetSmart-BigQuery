@@ -25,7 +25,7 @@ DECLARE Variant_sd int64;
 ########### This is what needs to be edited ########### 
 #######################################################
 
-SET opti_campaign = '50% M4 Traffic Monitoring';
+SET opti_campaign = '50% M4 Traffic Monitoring'; ## If no campaign --- put "no personalization"
 SET opti_experiment = 'Legacy'; ## Will have to change this if there are multiple (Ex: legacy or replatform)
 SET Control_ID_US = '30122530594'; ## If there is no US or CA Control version just put the same ID for both
 SET Variant_ID_US = '30189170384'; ## If there is no US or CA Variant version just put the same ID for both
