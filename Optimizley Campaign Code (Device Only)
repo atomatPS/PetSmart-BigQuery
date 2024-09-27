@@ -104,7 +104,7 @@ opti_device_category as CA_opti_device_category,
 opti_session_id as CA_opti_session_id,
 optimizely_variation as CA_optimizely_variation,
 optimizely_experiment as CA_optimizely_experiment,
-IFNULL(revenue,0) AS US_revenue,
+IFNULL(revenue,0) AS CA_revenue,
 CASE WHEN revenue > 0 then 1 ELSE 0 END as Conversion
 from(
 with opti_sessions as (
@@ -155,7 +155,7 @@ group by US_opti_device_category;
 ###############################
 SELECT 
 US_opti_device_category,
-COUNT(*) as Variant_n,
+COUNT(*) as Control_n,
 avg(US_revenue) as Control_Revenue_mean,
 stddev(US_revenue) as Control_Revenue_sd,
 avg(Conversion) as Control_CVR_mean,
@@ -215,7 +215,7 @@ opti_device_category as CA_opti_device_category,
 opti_session_id as CA_opti_session_id,
 optimizely_variation as CA_optimizely_variation,
 optimizely_experiment as CA_optimizely_experiment,
-IFNULL(revenue,0) AS US_revenue,
+IFNULL(revenue,0) AS CA_revenue,
 CASE WHEN revenue > 0 then 1 ELSE 0 END as Conversion
 from(
 with opti_sessions as (
