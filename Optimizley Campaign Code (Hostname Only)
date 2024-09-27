@@ -135,7 +135,7 @@ purch_sessions as(
   event_name as purch_event,
   (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
   concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as purch_session_id,
-  ecommerce.purchase_revenue as revenue
+  ecommerce.purchase_revenue_in_usd as revenue
   from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
 )
 SELECT * from opti_sessions 
@@ -246,7 +246,7 @@ purch_sessions as(
   event_name as purch_event,
   (SELECT value.string_value FROM UNNEST (user_properties) WHERE key = 'country_code_hostname') AS purch_hostname,
   concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as purch_session_id,
-  ecommerce.purchase_revenue as revenue
+  ecommerce.purchase_revenue_in_usd as revenue
   from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
 )
 SELECT * from opti_sessions 
