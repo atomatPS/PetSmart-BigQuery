@@ -121,7 +121,7 @@ with opti_users as (
 purch_users as(
   SELECT 
   user_pseudo_id as purch_user_id,
-  sum(ecommerce.purchase_revenue) as revenue
+  sum(ecommerce.purchase_revenue_in_usd) as revenue
   from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
   group by 1
 ) 
@@ -219,7 +219,7 @@ with opti_users as (
 purch_users as(
   SELECT 
   user_pseudo_id as purch_user_id,
-  sum(ecommerce.purchase_revenue) as revenue
+  sum(ecommerce.purchase_revenue_in_usd) as revenue
   from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'purchase'
   group by 1
 )
