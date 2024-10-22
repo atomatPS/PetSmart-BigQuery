@@ -1,0 +1,11 @@
+SELECT *,
+regexp_extract(page_location, ".*(?:\\bcom\\b|\\bca\\b)(.*?)(?:\\?|$)") as Page_Path
+from(
+SELECT 
+concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as session_id,
+TIMESTAMP_MICROS(event_timestamp) as event_timestamp,
+event_name,
+(select value.string_value from unnest(event_params) where key = 'page_location') as page_location
+from `petsmart-web-ecom.analytics_287660050.events_*` 
+WHERE _TABLE_SUFFIX = '20240423'
+)
