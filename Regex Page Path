@@ -1,0 +1,10 @@
+# This was meant for Looker Studio but its SQL code and so will also work in other programs that use that language 
+
+## Page Path Level 1
+REGEXP_EXTRACT(Page path,'^/([^/]+)')
+
+## Page Path Level 2 
+REGEXP_EXTRACT(Page path,'^/[^/]+/([^/]+)')
+
+## Page Path Level 3 
+REGEXP_EXTRACT(Page path,'^/[^/]+/[^/]+/([^/]+)')
