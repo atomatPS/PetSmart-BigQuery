@@ -7,7 +7,7 @@ from(
 
 "the query that gives you the data you would like to insert"
 
-) WHERE unique_event_identifier NOT IN (SELECT " A unique_event_identifier you create" from `"Name of table again"`)
+) WHERE "A unique_event_identifier you create" NOT IN (SELECT "A unique_event_identifier you create" from `"Name of table again"`)
 )
 
 
