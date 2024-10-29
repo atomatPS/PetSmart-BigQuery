@@ -1,6 +1,7 @@
 ### Template 
 
-INSERT INTO `"Name of table"` (the schema of the table in exactly the same order as it appears)(
+INSERT INTO `"Name of table"` (the schema of the table in exactly the same order as it appears)
+(
 SELECT *
 from(
 
