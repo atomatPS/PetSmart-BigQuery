@@ -1,0 +1,19 @@
+SELECT
+*,
+from(
+SELECT
+extract(hour FROM TIMESTAMP_MICROS(event_timestamp) AT TIME ZONE 'America/Phoenix') as hour,
+extract(minute FROM TIMESTAMP_MICROS(event_timestamp) AT TIME ZONE 'America/Phoenix') as minute,
+concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as session_id,
+geo.region as region,
+(select value.string_value from unnest(event_params) where key = 'page_location') as page
+session_traffic_source_last_click.cross_channel_campaign.primary_channel_group,
+session_traffic_source_last_click.cross_channel_campaign.source,
+session_traffic_source_last_click.cross_channel_campaign.medium,
+from `petsmart-web-ecom.analytics_287660050.events_*` 
+WHERE _TABLE_SUFFIX = '20241213' 
+AND event_name = 'page_view' 
+) 
+WHERE regexp_contains(page,"hermit-crab")
+AND region = "Oregon"
+and hour = 12 
