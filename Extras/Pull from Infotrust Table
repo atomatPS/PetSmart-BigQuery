@@ -9,3 +9,4 @@ round(sum(revenue),2) as revenue
 GROUP BY 1,2
 )
 WHERE date = CURRENT_DATE('America/Phoenix')
+ORDER BY US_hour_VI ASC
