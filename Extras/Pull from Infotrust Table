@@ -1,0 +1,11 @@
+SELECT
+*
+from(
+SELECT 
+extract(date FROM timestamp AT TIME ZONE 'America/Phoenix') as date,
+extract(hour FROM timestamp AT TIME ZONE 'America/Phoenix') as US_hour_VI,
+round(sum(revenue),2) as revenue
+ FROM `petsmart-web-ecom.predictions.petsmart_g4_timeseries_transactions` 
+GROUP BY 1,2
+)
+WHERE date = CURRENT_DATE('America/Phoenix')
