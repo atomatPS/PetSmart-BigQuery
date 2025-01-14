@@ -1,3 +1,24 @@
+## General Using Page, Region, and Time
+SELECT
+*,
+from(
+SELECT
+extract(hour FROM TIMESTAMP_MICROS(event_timestamp) AT TIME ZONE 'America/Phoenix') as hour,
+extract(minute FROM TIMESTAMP_MICROS(event_timestamp) AT TIME ZONE 'America/Phoenix') as minute,
+concat(user_pseudo_id,(select value.int_value from unnest(event_params) where key = 'ga_session_id')) as session_id,
+geo.region as region,
+(select value.string_value from unnest(event_params) where key = 'page_location') as page
+from `petsmart-web-ecom.analytics_287660050.events_*` 
+WHERE _TABLE_SUFFIX = '20250113' 
+AND event_name = 'page_view' 
+) 
+WHERE regexp_contains(page,"hermit-crab")
+AND region = "California"
+AND hour = 15
+
+
+
+## Using Page, Region, and Time w/ Marketing Channels
 SELECT
 *,
 from(
