@@ -1,0 +1,19 @@
+## App
+# Example
+SELECT * from `customer-app-b2e25.analytics_176581401.events_*` WHERE _TABLE_SUFFIX = '20240423' AND event_name = 'session_start' Limit 10
+
+## US
+# Example
+SELECT * from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX = '20240423' AND event_name = 'checkout_step' Limit 10;
+
+## CA
+# Example
+SELECT * from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX = '20240423' AND event_name = 'checkout_step' Limit 10;
+
+## US Services
+# Example
+SELECT * from `petsmart-web-ecom.analytics_339429365.events_*` WHERE _TABLE_SUFFIX = '20240423' AND event_name = 'checkout_step' Limit 10;
+
+## CA Services
+# Example
+SELECT * from `petsmart-web-ecom.analytics_339452491.events_*` WHERE _TABLE_SUFFIX = '20240423' AND event_name = 'checkout_step' Limit 10;
