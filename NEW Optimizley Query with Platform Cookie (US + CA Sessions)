@@ -45,10 +45,10 @@ DECLARE Variant_sd int64;
 #### If there are no seperate US and CA versions --- then just put the same value for both 
 
 
-SET platform_cookie_Control_US = '.*'; 
-SET platform_cookie_Variant_US = '.*'; 
-SET platform_cookie_Control_CA = '.*'; 
-SET platform_cookie_Variant_CA = '.*';
+SET platform_cookie_Control_US = 'searchbrowse'; 
+SET platform_cookie_Variant_US = 'fullsolution'; 
+SET platform_cookie_Control_CA = 'searchbrowse'; 
+SET platform_cookie_Variant_CA = 'fullsolution';
 
 SET opti_campaign_Control_US = '.*';
 SET opti_campaign_Variant_US = '.*';
@@ -59,7 +59,6 @@ SET opti_experiment_Control_US = '6529027226206208';
 SET opti_experiment_Variant_US = '6529027226206208';
 SET opti_experiment_Control_CA = '6529027226206208';
 SET opti_experiment_Variant_CA = '6529027226206208';
-
 
 SET Control_ID_US = '6544102091653120';
 SET Variant_ID_US = '6725314210955264'; 
