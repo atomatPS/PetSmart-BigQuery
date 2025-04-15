@@ -34,8 +34,6 @@ DECLARE Variant_sd int64;
 ## Notes:
 #### Only edit what is in quotation marks --- do not leave anything blank
 #### If any of these parameters are not needed --- then just put ".*"
-#### If there are no seperate US and CA versions --- then just put the same value for both 
-
 
 SET platform_cookie_Control_US = 'searchbrowse'; 
 SET platform_cookie_Variant_US = 'fullsolution'; 
