@@ -2,10 +2,18 @@
 ##################################################################
 
 
-DECLARE opti_campaign STRING;
-DECLARE opti_experiment STRING;
+DECLARE platform_cookie_Control_US STRING;
+DECLARE platform_cookie_Variant_US STRING;
+
+DECLARE opti_campaign_Control_US STRING;
+DECLARE opti_campaign_Variant_US STRING;
+
+DECLARE opti_experiment_Control_US STRING;
+DECLARE opti_experiment_Variant_US STRING;
+
 DECLARE Control_ID_US STRING;
 DECLARE Variant_ID_US STRING;
+
 DECLARE Start_Date STRING;
 DECLARE End_Date STRING;
 
@@ -23,12 +31,26 @@ DECLARE Variant_sd int64;
 ########### This is what needs to be edited ########### 
 #######################################################
 
-SET opti_campaign = '50% M4 Traffic Monitoring'; ## If no campaign --- put "no personalization"
-SET opti_experiment = 'Legacy'; ## Will have to change this if there are multiple (Ex: legacy or replatform)
-SET Control_ID_US = '30122530594'; 
-SET Variant_ID_US = '30189170384'; 
-SET Start_Date = '20240818';
-SET End_Date = '20240818';
+## Notes:
+#### Only edit what is in quotation marks --- do not leave anything blank
+#### If any of these parameters are not needed --- then just put ".*"
+#### If there are no seperate US and CA versions --- then just put the same value for both 
+
+
+SET platform_cookie_Control_US = 'searchbrowse'; 
+SET platform_cookie_Variant_US = 'fullsolution'; 
+
+SET opti_campaign_Control_US = '.*';
+SET opti_campaign_Variant_US = '.*';
+
+SET opti_experiment_Control_US = '6529027226206208';
+SET opti_experiment_Variant_US = '6529027226206208';
+
+SET Control_ID_US = '6544102091653120';
+SET Variant_ID_US = '6725314210955264'; 
+
+SET Start_Date = '20250401';
+SET End_Date = '20250401';
 
 ############################################################################################
 ############################################################################################
@@ -63,13 +85,15 @@ with opti_users as (
   from(
     SELECT 
     user_pseudo_id as opti_user_id,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'edgio_cookie_experience') AS edgio_cookie_experience,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_campaign') AS optimizely_campaign,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment
   from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
   )
-  WHERE regexp_contains(optimizely_campaign, opti_campaign) 
-    AND regexp_contains(optimizely_experiment, opti_experiment)
+  WHERE regexp_contains(edgio_cookie_experience, platform_cookie_Variant_US)
+    AND regexp_contains(optimizely_campaign, opti_campaign_Variant_US) 
+    AND regexp_contains(optimizely_experiment, opti_experiment_Variant_US)
     AND regexp_contains(optimizely_variation, Variant_ID_US) 
   )
   WHERE rn = 1
@@ -118,14 +142,16 @@ with opti_users as (
   from(
     SELECT 
     user_pseudo_id as opti_user_id,
+    (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'edgio_cookie_experience') AS edgio_cookie_experience,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_variation') AS optimizely_variation,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_campaign') AS optimizely_campaign,
     (SELECT value.string_value FROM UNNEST (event_params) WHERE key = 'optimizely_experiment') AS optimizely_experiment
   from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX between Start_Date and End_Date AND  event_name = 'optimizely_decision_web'
   )
-  WHERE regexp_contains(optimizely_campaign, opti_campaign) 
-    AND regexp_contains(optimizely_experiment, opti_experiment)
-    AND regexp_contains(optimizely_variation, Control_ID_US)
+  WHERE regexp_contains(edgio_cookie_experience, platform_cookie_Control_US)
+    AND regexp_contains(optimizely_campaign, opti_campaign_Control_US) 
+    AND regexp_contains(optimizely_experiment, opti_experiment_Control_US)
+    AND regexp_contains(optimizely_variation, Control_ID_US) 
   )
   WHERE rn = 1
 ),
