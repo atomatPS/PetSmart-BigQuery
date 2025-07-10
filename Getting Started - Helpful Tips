@@ -1,0 +1,25 @@
+
+Link to website that generates a SQL Query for you using GA4 metrics and dimensions
+** Note: Not all dimensions and metrics we have will be included 
+-----------------------------
+https://www.ga4sql.com/
+----------------------------
+
+
+Properties to pull data from 
+(Queries below will grab all the data for the date 04/23/2024) 
+
+### US Retail Property ###
+SELECT * from `petsmart-web-ecom.analytics_287660050.events_*` WHERE _TABLE_SUFFIX = '20240423'
+
+### CA Retail Property ###
+SELECT * from `petsmart-web-ecom.analytics_339409281.events_*` WHERE _TABLE_SUFFIX = '20240423'
+
+### US Services Property ###
+SELECT * from `petsmart-web-ecom.analytics_339429365.events_*` WHERE _TABLE_SUFFIX = '20240423'
+
+### CA Services Property ###
+SELECT * from `petsmart-web-ecom.analytics_339452491.events_*` WHERE _TABLE_SUFFIX = '20240423'
+
+### App Property ###
+SELECT * from `customer-app-b2e25.analytics_176581401.events_*` WHERE _TABLE_SUFFIX = '20240423'
