@@ -1,0 +1,11 @@
+## If you want to add or subtract month, days, hours, minutes from a timestamp 
+## https://www.w3schools.com/sql/func_sqlserver_dateadd.asp
+
+## Use the dateadd function 
+
+## Example of adding 18 years to the date 
+SELECT BirthDate, DATEADD(year, 18, BirthDate) AS DateAdd FROM Employees;
+
+## Example of subtracting 1 hour from timestamp 
+SELECT in_store_txn_time_PHX, dateadd(hour,-1,in_store_txn_time_PHX) AS in_store_txn_time_PHX;
+
