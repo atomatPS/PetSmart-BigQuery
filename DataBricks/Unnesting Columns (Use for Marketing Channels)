@@ -1,0 +1,35 @@
+###################
+## Example of how to unnest the marketing channels from the events table and the "session_traffic_source_last_click" column
+###################
+SELECT 
+  event_date,
+  event_name,
+  TIMESTAMP_MICROS(event_timestamp) as event_timestamp,
+  user_pseudo_id as user_id,
+  event_params_ga_session_id as session_id,
+  cross_channel_campaign.default_channel_group as default_channel_group
+FROM 
+  prod.refine.google_analytics_events
+LATERAL VIEW EXPLODE(session_traffic_source_last_click) AS session_traffic_source_last_click, cross_channel_campaign
+WHERE 
+    event_date BETWEEN date_sub(current_date(), 8) AND date_sub(current_date(), 2)
+  AND 
+    cross_channel_campaign.default_channel_group IS NOT NULL
+
+
+###################
+## Example of how to unnest values from the additional_event_params column in the events table
+##################
+SELECT 
+  event_date,
+  event_name,
+  TIMESTAMP_MICROS(event_timestamp) as event_timestamp,
+  user_pseudo_id as user_id,
+  event_params_ga_session_id as session_id,
+  params_value.key as key,
+  params_value.value.string_value as value
+FROM 
+  prod.refine.google_analytics_events
+LATERAL VIEW OUTER EXPLODE(additional_event_params) AS params_value
+WHERE 
+    event_date between date_sub(current_date(), 8) and date_sub(current_date(), 2)
