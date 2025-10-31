@@ -1,0 +1,13 @@
+----- Exclude_Sessions
+SELECT 
+concat(user_pseudo_id,event_params_ga_session_id) as session_id_exclude
+FROM prod.refine.google_analytics_events
+LATERAL VIEW EXPLODE(session_traffic_source_last_click) AS session_traffic_source_last_click, cross_channel_campaign
+WHERE event_date between date_sub(current_date(), 8) and date_sub(current_date(), 2)
+AND cross_channel_campaign.default_channel_group = "Direct"
+AND device_category = "desktop"
+AND event_name <> "purchase" 
+AND geo_city IN ("","Seattle","Kawartha Lakes","Peterborough","Lakefield","North Babylon","Bellflower","Fort Worth")
+OR 
+event_date = date_sub(current_date(), 8)
+AND geo_country NOT IN ("United States","Canada","Puerto Rico")
