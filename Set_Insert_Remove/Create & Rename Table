@@ -15,5 +15,5 @@ ORDER BY 1,3;
 
 
 
-DROP TABLE `customer-app-b2e25.adhoc_tables.App by Hour_Append_NEW_test`;
+DROP TABLE `customer-app-b2e25.adhoc_tables.App by Hour_Append_NEW_Test`;
 
